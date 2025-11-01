@@ -20,12 +20,13 @@ export function LoginPage({ className }: LoginPageProps) {
 
 	if (loading) return <p>Загрузка...</p>;
 
+	const redirectUrl = window.location.origin; // автоматически определит localhost или github.io
 	if (!user) {
 		return (
-			<div>
-				<h1>Добро пожаловать!</h1>
-				<a href={`${import.meta.env.VITE_API_URL}/auth/google`}>Войти через Google</a>
-			</div>
+
+			<a href={`${import.meta.env.VITE_API_URL}/api/auth/google?redirect=${encodeURIComponent(redirectUrl)}`}>
+			Войти через Google
+			</a>
 		);
 	}
 
