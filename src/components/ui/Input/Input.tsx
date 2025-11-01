@@ -38,7 +38,7 @@ const Input: FC<InputProps> = ({
     label
 }) => {
 
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const handleClick = () => {
         if (inputRef && inputRef.current) inputRef.current.focus();

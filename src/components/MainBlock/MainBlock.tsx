@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import type { IDay } from '../../configs/config'
 import { settings } from '../../configs/config'
 import type { DayP, ExP, PhaseP, WeekP } from '../../models/Programs'
 import { useGetProgramMeActiveQuery, useUpdateDayCommentsMutation } from '../../store/apiSlice'
@@ -25,9 +23,6 @@ const MainBlock: FC<MainBlockProps> = () => {
 	const [indexWeek, setIndexWeek] = useState<number>(0);
 	const [programIndex, setProgramIndex] = useState<number>(0);
 	const [dayComment, setDayComment] = useState<string>('');
-	
-	// Данные для упражнений и комментариев (для будущей интеграции)
-	const [dataExercises] = useState<any>(null);
 
 	const { 
 		data: programData, 
@@ -70,53 +65,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 	// ============ Вспомогательные функции ============
 	// React Compiler автоматически оптимизирует эти функции
 	
-	/**
-	 * Генерирует список недель для выбора
-	 * @param duration - количество недель
-	 * @returns массив объектов с label и value
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const parseWeeks = (duration: number): ISelectItem[] => {
-		return Array.from({ length: duration }, (_, index) => ({
-			label: (index + 1).toString(),
-			value: index.toString(),
-		}));
-	};
-	
-	/**
-	 * Генерирует список программ/фаз для выбора
-	 * @param duration - количество программ
-	 * @returns массив объектов с label и value
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const parseProgramsIndex = (duration: number): ISelectItem[] => {
-		return Array.from({ length: duration }, (_, index) => ({
-			label: (index + 1).toString(),
-			value: index.toString(),
-		}));
-	};
 
-	/**
-	 * Генерирует список дней недели для выбора
-	 * @returns массив объектов с label и value для каждого дня
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const parseProgramsDays = (): ISelectItem[] => {
-		if (!scheduleWeek?.days) return [];
-		return scheduleWeek.days.map((el, index) => ({
-			label: el.title || `Day ${index + 1}`,
-			value: index.toString(),
-		}));
-	};
-
-	/**
-	 * Парсинг данных программы (для логирования и отладки)
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const parseData = () => {
-		if (!programData || !activePhase) return;
-		console.log('Parsing program data:', programData);
-	};
 
 	// Сеттер для программы
 	const setProgramId = (id: number) => {
@@ -187,35 +136,6 @@ const MainBlock: FC<MainBlockProps> = () => {
 				comments: dayComment,
 			});
 		}
-	};
-
-	/**
-	 * Вычисляет прогресс выполнения упражнений
-	 * @param arr - массив дней с упражнениями
-	 * @returns процент выполнения (0-100)
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const getProgress = (arr: IDay[]): number => {
-		let count = 0;
-		let progress = 0;
-		
-		arr.forEach((el) => {
-			const repeat = el.weeks[indexWeek].split('')[0];
-			count += Number(repeat);
-		});
-		
-		const currentExercises = dataExercises?.[days[indexDay]?.label];
-		let currentCount = 0;
-		
-		if (currentExercises) {
-			Object.values(currentExercises).forEach((el: any) => {
-				currentCount += Number(el.repeat[indexWeek] || 0);
-			});
-			const coefficient = 100 / count;
-			progress = Math.round(currentCount * coefficient);
-		}
-        
-		return progress;
 	};
 
 	// Обработка состояний загрузки и ошибок

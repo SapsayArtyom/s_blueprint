@@ -14,7 +14,7 @@ const Hamburger: FC<HamburgerProps> = ({ className, onClick, isOpen }) => {
     // const [isOpen, setOpen] = useState<boolean>(false);
     
     const btnHandle = () => {
-        onClick();
+        onClick?.();
         // setOpen(!isOpen);
     }
  
