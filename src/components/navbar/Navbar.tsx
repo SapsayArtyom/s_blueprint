@@ -40,13 +40,13 @@ const Navbar: FC<NavbarProps> = ({ className }) => {
 					<p className='text-white font-bold text-2xl'>Sport Blueprint</p>
 					<img className={cls.logo} src={logo} alt='logo' />
 				</div>
-				<div>
+				<div className=''>
 					{!loading ? user ? <div className='flex items-center text-white gap-4'>
 						<p className='text-center'>{user.name}</p>
 						<Button
 							theme={ThemeButton.SECONDARY}
 							onClick={handleLogout}
-							className='!h-[35px] !px-4 !text-sm'
+							className='!h-[35px] !px-4 !text-sm hidden md:visible'
 						>
 							Выйти
 						</Button>

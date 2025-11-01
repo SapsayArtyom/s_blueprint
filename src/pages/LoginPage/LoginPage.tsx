@@ -24,7 +24,7 @@ export function LoginPage({ className }: LoginPageProps) {
 	if (!user) {
 		return (
 
-			<a href={`${import.meta.env.VITE_API_URL}/api/auth/google?redirect=${encodeURIComponent(redirectUrl)}`}>
+			<a href={`${import.meta.env.VITE_API_URL}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`}>
 			Войти через Google
 			</a>
 		);
