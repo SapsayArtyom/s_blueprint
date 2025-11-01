@@ -1,0 +1,23 @@
+.AppLink {
+    color: #fff;
+    font-size: 1rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 30px;
+    border-radius: 6px;
+}
+
+.navLink {
+    align-items: 'center';
+}
+
+.activeLink {
+    color: '#884185';
+}
+
+.active {
+    background-color: var(--color-orange);
+}

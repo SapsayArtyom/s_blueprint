@@ -1,0 +1,35 @@
+.Button {
+    cursor: pointer;
+    justify-content: 'center';
+    align-items: 'center';
+}
+
+.clear {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    outline: none;
+}
+
+.primary {
+    border-radius: 50px;
+    background-image: linear-gradient(to right, #FA8305, #FB9E3C);
+    width: 195px;
+    height: 55px;
+    font-size: 16px;
+}
+
+.secondary {
+    width: 139px;
+    height: 57px;
+    background-color: #28262E;
+    border-radius: 10px;
+}
+
+.rounded {
+    width: 139px;
+    height: 57px;
+    background-image: linear-gradient(to right, #FA8305, #FB9E3C);
+    border-radius: 10px;
+}

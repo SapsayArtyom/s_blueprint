@@ -1,0 +1,44 @@
+@import 'https://fonts.googleapis.com/css2?family=Poppins';
+@import 'tailwindcss';
+
+@theme {
+    --color-background: #070707;
+}
+
+:root {
+    font-family: Poppins, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-image: linear-gradient(to bottom, #08070a, #271e4e);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+    background-image: linear-gradient(to bottom, #08070a, #271e4e);
+}
+
+body,
+h1,
+h2,
+a,
+p,
+span,
+button,
+label {
+    font-family: Poppins;
+    color: white;
+}
+
+.layout {
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+    padding-top: 114px;
+}
