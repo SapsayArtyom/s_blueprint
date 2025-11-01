@@ -244,7 +244,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 				scheduleDay ? renderDay(scheduleDay.exercises as ExP[]) : <div>Loading...</div>
 			}
 			<div className='pb-[70px] pt-[10px] px-[13px]'>
-				<p className='text-[14px] mb-[5px]'>Комментарий к дню:</p>
+				<p className='text-[14px] mb-[5px]'>Комментарий ко дню:</p>
 				<TextArea 
 					value={dayComment}
 					placeholder='Добавьте комментарий к тренировочному дню...'
