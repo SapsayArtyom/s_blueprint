@@ -20,7 +20,7 @@ export function LoginPage({ className }: LoginPageProps) {
 
 	if (loading) return <p>Загрузка...</p>;
 
-	const redirectUrl = window.location.origin; // автоматически определит localhost или github.io
+	const redirectUrl = `${window.location.origin}${import.meta.env.BASE_URL}`; // автоматически определит localhost или github.io с base path
 	if (!user) {
 		return (
 
