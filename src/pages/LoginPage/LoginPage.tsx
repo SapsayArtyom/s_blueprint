@@ -21,9 +21,12 @@ export function LoginPage({ className }: LoginPageProps) {
 	if (loading) return <p>Загрузка...</p>;
 
 	const apiUrl = import.meta.env.VITE_API_URL || 'https://sport-blueprint-api-310298945951.us-central1.run.app/api';
-	const redirectUrl = `${window.location.origin}${import.meta.env.BASE_URL}`; // автоматически определит localhost или github.io с base path
+	// Убираем trailing slash из BASE_URL если он есть
+	const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+	const redirectUrl = `${window.location.origin}${basePath}`;
 	
 	console.log('API URL:', apiUrl); // Для отладки
+	console.log('Base Path:', basePath); // Для отладки
 	console.log('Redirect URL:', redirectUrl); // Для отладки
 	
 	if (!user) {
