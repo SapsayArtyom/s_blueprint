@@ -1,3 +1,6 @@
+// Base path для GitHub Pages
+export const BASE_PATH = import.meta.env.BASE_URL || '/';
+
 export interface IDay {
     name: string,
     id: number,

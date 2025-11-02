@@ -25,7 +25,7 @@ export function LoginPage({ className }: LoginPageProps) {
 		return (
 
 			<a href={`${import.meta.env.VITE_API_URL}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`}>
-			Войти через Google
+				Войти через Google
 			</a>
 		);
 	}
