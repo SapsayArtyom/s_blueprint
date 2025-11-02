@@ -3,7 +3,7 @@ import type { ProgramByEmail } from '../models/Programs';
 import type { IUser } from '../models/User';
 
 const baseQuery = fetchBaseQuery({
-	baseUrl: import.meta.env.VITE_API_URL,
+	baseUrl: import.meta.env.VITE_API_URL || 'https://sport-blueprint-api-310298945951.us-central1.run.app/api',
 	credentials: 'include', // для работы с cookie
 });
 
