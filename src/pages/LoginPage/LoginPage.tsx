@@ -20,13 +20,19 @@ export function LoginPage({ className }: LoginPageProps) {
 
 	if (loading) return <p>Загрузка...</p>;
 
+	const apiUrl = import.meta.env.VITE_API_URL || 'https://sport-blueprint-api-310298945951.us-central1.run.app/api';
 	const redirectUrl = `${window.location.origin}${import.meta.env.BASE_URL}`; // автоматически определит localhost или github.io с base path
+	
+	console.log('API URL:', apiUrl); // Для отладки
+	console.log('Redirect URL:', redirectUrl); // Для отладки
+	
 	if (!user) {
 		return (
-
-			<a href={`${import.meta.env.VITE_API_URL}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`}>
-				Войти через Google
-			</a>
+			<div>
+				<a href={`${apiUrl}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`}>
+					Войти через Google
+				</a>
+			</div>
 		);
 	}
 
