@@ -8,6 +8,9 @@ import PageError from './components/pageError/PageError.tsx';
 import { BASE_PATH } from './configs/config.ts';
 import './index.css';
 import { store } from './store/store.ts';
+import { captureAuthTokenFromUrl } from './utils/authToken.ts';
+
+captureAuthTokenFromUrl();
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
