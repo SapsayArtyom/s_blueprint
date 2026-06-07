@@ -12,6 +12,7 @@ const rawBaseQuery = fetchBaseQuery({
 		const token = getAuthToken();
 		if (token) {
 			headers.set('Authorization', `Bearer ${token}`);
+			headers.set('x-auth-token', token);
 		}
 
 		return headers;
