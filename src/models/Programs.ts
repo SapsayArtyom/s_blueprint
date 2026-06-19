@@ -6,39 +6,40 @@ export type SetP = {
 };
 
 export type Exercise = {
-	slug: string;
-	name: string;
-	link: string;
-}
+    slug: string;
+    name: string;
+    link: string;
+};
 
 export type ExP = {
-	_id?: string; // ID упражнения для обновлений
-	exercise: Exercise; 
-	notes?: string; 
-	sets: SetP; 
-	count?: number; 
-	weight?: number; 
-	prevWeight?: number; 
-	comments?: string;
+    _id?: string; // ID упражнения для обновлений
+    order: number;
+    exercise: Exercise;
+    notes?: string;
+    sets: SetP;
+    count?: number;
+    weight?: number;
+    prevWeight?: number;
+    comments?: string;
 };
 
 export type DayP = {
-	_id?: string; // ID дня для обновлений
-	dayOfWeek?: number; 
-	title?: string; 
-	plannedDate?: string; 
-	exercises: ExP[]; 
-	comments?: string;
+    _id?: string; // ID дня для обновлений
+    dayOfWeek?: number;
+    title?: string;
+    plannedDate?: string;
+    exercises: ExP[];
+    comments?: string;
 };
 
 export type WeekP = {
-	_id?: string; // ID недели
-	weekNumber: number; 
-	days: DayP[];
+    _id?: string; // ID недели
+    weekNumber: number;
+    days: DayP[];
 };
 
 export type PhaseP = {
-	_id?: string; // ID фазы
+    _id?: string; // ID фазы
     name: string;
     order: number;
     durationWeeks: number;
@@ -47,7 +48,7 @@ export type PhaseP = {
 };
 
 export type ProgramByEmail = {
-	_id?: string; // ID программы
+    _id?: string; // ID программы
     email: string; // владелец
     title: string;
     isActive?: boolean;

@@ -1,22 +1,22 @@
-import type { FC } from 'react'
-import { useEffect, useState } from 'react'
-import { settings } from '../../configs/config'
-import type { DayP, ExP, PhaseP, WeekP } from '../../models/Programs'
-import { useGetProgramMeActiveQuery, useUpdateDayCommentsMutation } from '../../store/apiSlice'
-import Exercise from '../Exercise/Exercise'
-import Button, { ThemeButton } from '../ui/Button/Button'
-import TextArea from '../ui/TextArea/TextArea'
-import MainBlockHeader from './MainBlockHeader'
- 
+import type { FC } from 'react';
+import { useEffect, useState } from 'react';
+import { settings } from '../../configs/config';
+import type { DayP, ExP, PhaseP, WeekP } from '../../models/Programs';
+import { useGetProgramMeActiveQuery, useUpdateDayCommentsMutation } from '../../store/apiSlice';
+import Exercise from '../Exercise/Exercise';
+import Button, { ThemeButton } from '../ui/Button/Button';
+import TextArea from '../ui/TextArea/TextArea';
+import MainBlockHeader from './MainBlockHeader';
+
 interface MainBlockProps {
-    className?: string
+    className?: string;
 }
 
 export interface ISelectItem {
-    label: string
-    value: string
+    label: string;
+    value: string;
 }
- 
+
 const MainBlock: FC<MainBlockProps> = () => {
 	// Основные индексы состояния
 	const [indexDay, setIndexDay] = useState<number>(0);
@@ -24,25 +24,23 @@ const MainBlock: FC<MainBlockProps> = () => {
 	const [programIndex, setProgramIndex] = useState<number>(0);
 	const [dayComment, setDayComment] = useState<string>('');
 
-	const { 
-		data: programData, 
-		isLoading, 
-		error 
-	} = useGetProgramMeActiveQuery();
+	const { data: programData, isLoading, error } = useGetProgramMeActiveQuery();
 
 	const [updateDayComments] = useUpdateDayCommentsMutation();
 
 	// React Compiler автоматически оптимизирует эти вычисления
 	const activePhase: PhaseP | null = programData?.phases?.[programIndex] || null;
 
-	const weeks: ISelectItem[] = !activePhase ? [] : 
-		Array.from({ length: activePhase.durationWeeks }, (_, index) => ({
+	const weeks: ISelectItem[] = !activePhase
+		? []
+		: Array.from({ length: activePhase.durationWeeks }, (_, index) => ({
 			label: (index + 1).toString(),
 			value: index.toString(),
 		}));
 
-	const programs: ISelectItem[] = !programData?.phases ? [] :
-		Array.from({ length: programData.phases.length }, (_, index) => ({
+	const programs: ISelectItem[] = !programData?.phases
+		? []
+		: Array.from({ length: programData.phases.length }, (_, index) => ({
 			label: (index + 1).toString(),
 			value: index.toString(),
 		}));
@@ -51,8 +49,9 @@ const MainBlock: FC<MainBlockProps> = () => {
 
 	const scheduleDay: DayP | null = scheduleWeek?.days?.[indexDay] || null;
 
-	const days: ISelectItem[] = !scheduleWeek?.days ? [] :
-		scheduleWeek.days.map((el, index) => ({
+	const days: ISelectItem[] = !scheduleWeek?.days
+		? []
+		: scheduleWeek.days.map((el, index) => ({
 			label: el.title || `Day ${index + 1}`,
 			value: index.toString(),
 		}));
@@ -64,8 +63,6 @@ const MainBlock: FC<MainBlockProps> = () => {
 
 	// ============ Вспомогательные функции ============
 	// React Compiler автоматически оптимизирует эти функции
-	
-
 
 	// Сеттер для программы
 	const setProgramId = (id: number) => {
@@ -84,39 +81,35 @@ const MainBlock: FC<MainBlockProps> = () => {
 	useEffect(() => {
 		const diffSeconds = (settings.startProgramm - Date.now()) / 1000;
 		const diffWeeks = Math.abs(Math.ceil(diffSeconds / (60 * 60 * 24 * 7)));
-		const diffDays = Math.abs(Math.ceil(diffSeconds / (60 * 60 * 24) % 7));
-		
+		const diffDays = Math.abs(Math.ceil((diffSeconds / (60 * 60 * 24)) % 7));
+
 		const currentWeek = diffWeeks >= settings.durationProgramm ? 0 : diffWeeks;
 		const currentDay = diffDays > 6 ? 0 : getCurrentDay(diffDays);
 
 		setIndexWeek(currentWeek);
 		setIndexDay(currentDay);
 	}, []); // React Compiler оптимизирует зависимости автоматически
-    
+
 	// ID активной программы
 	const programId = programData?._id || '';
 
 	// Рендер списка упражнений
 	const renderExercises = (exercises: ExP[]) => {
-		return exercises.map((exercise, index) => (
-			<Exercise 
-				data={exercise}
-				programId={programId}
-				key={`exercise-${index}`}	
-			/>
+		const sortedExercises = [...exercises].sort((a, b) => a.order - b.order);
+
+		return sortedExercises.map((exercise, index) => (
+			<Exercise data={exercise} programId={programId} key={`exercise-${index}`} />
 		));
 	};
 
 	// Рендер дня с упражнениями
 	const renderDay = (exercises: ExP[]) => {
 		return (
-			<div className='flex flex-col h-[100%] justify-start mt-[70px]'>
-				<p className='mb-[10px] text-[26px] bg-[#672E5A] py-[10px] text-center'>
+			<div className="flex flex-col h-[100%] justify-start mt-[70px]">
+				<p className="mb-[10px] text-[26px] bg-[#672E5A] py-[10px] text-center">
 					{days?.[indexDay]?.label}
 				</p>
-				<div className='flex flex-col'>
-					{renderExercises(exercises)}
-				</div>
+				<div className="flex flex-col">{renderExercises(exercises)}</div>
 			</div>
 		);
 	};
@@ -140,16 +133,20 @@ const MainBlock: FC<MainBlockProps> = () => {
 
 	// Обработка состояний загрузки и ошибок
 	if (isLoading) {
-		return <div className='flex items-center justify-center h-full'>Loading...</div>;
+		return <div className="flex items-center justify-center h-full">Loading...</div>;
 	}
 
 	if (error) {
-		return <div className='flex items-center justify-center h-full text-red-500'>Error loading program data</div>;
+		return (
+			<div className="flex items-center justify-center h-full text-red-500">
+                Error loading program data
+			</div>
+		);
 	}
 
 	return (
-		<div className='flex flex-col flex-1 relative w-[100%]'>
-			<MainBlockHeader 
+		<div className="flex flex-col flex-1 relative w-[100%]">
+			<MainBlockHeader
 				day={indexDay.toString()}
 				days={days}
 				week={indexWeek.toString()}
@@ -160,30 +157,28 @@ const MainBlock: FC<MainBlockProps> = () => {
 				setWeek={setIndexWeek}
 				setProgramIndex={setProgramId}
 			/>
-			{
-				scheduleDay ? renderDay(scheduleDay.exercises as ExP[]) : <div>Loading...</div>
-			}
-			<div className='pb-[70px] pt-[10px] px-[13px]'>
-				<p className='text-[14px] mb-[5px]'>Комментарий ко дню:</p>
-				<TextArea 
+			{scheduleDay ? renderDay(scheduleDay.exercises as ExP[]) : <div>Loading...</div>}
+			<div className="pb-[70px] pt-[10px] px-[13px]">
+				<p className="text-[14px] mb-[5px]">Комментарий ко дню:</p>
+				<TextArea
 					value={dayComment}
-					placeholder='Добавьте комментарий к тренировочному дню...'
-					className='bg-[#d3d3d33d] border-[1px] border-[#89878F]'
+					placeholder="Добавьте комментарий к тренировочному дню..."
+					className="bg-[#d3d3d33d] border-[1px] border-[#89878F]"
 					onChange={textAreaHandler}
 				/>
 				<Button
 					theme={ThemeButton.CLEAR}
-					className='!bg-[#00B4B9] !h-[35px] mt-[10px] text-[14px]'
+					className="!bg-[#00B4B9] !h-[35px] mt-[10px] text-[14px]"
 					onClick={saveDayComment}
 				>
-					Сохранить комментарий
+                    Сохранить комментарий
 				</Button>
 			</div>
-			<div className='fixed bottom-0 w-[100%] p-[13px] bg-[#0a080d]'>
+			<div className="fixed bottom-0 w-[100%] p-[13px] bg-[#0a080d]">
 				{/* <ProgressBar progress={getProgress(schedule[indexDay].exercises)} /> */}
 			</div>
 		</div>
-	)
-}
+	);
+};
 
 export default MainBlock;
