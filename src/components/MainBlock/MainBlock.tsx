@@ -96,7 +96,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 	// Рендер списка упражнений
 	const renderExercises = (exercises: ExP[]) => {
 		const sortedExercises = [...exercises].sort((a, b) => a.order - b.order);
-
+		console.log('Sorted Exercises:', sortedExercises); // Debugging line to check the sorted exercises
 		return sortedExercises.map((exercise, index) => (
 			<Exercise data={exercise} programId={programId} key={`exercise-${index}`} />
 		));
@@ -105,7 +105,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 	// Рендер дня с упражнениями
 	const renderDay = (exercises: ExP[]) => {
 		return (
-			<div className="flex flex-col h-[100%] justify-start mt-[70px]">
+			<div className="flex flex-col h-[100%] justify-start mt-[46px]">
 				<p className="mb-[10px] text-[26px] bg-[#672E5A] py-[10px] text-center">
 					{days?.[indexDay]?.label}
 				</p>
@@ -174,9 +174,9 @@ const MainBlock: FC<MainBlockProps> = () => {
                     Сохранить комментарий
 				</Button>
 			</div>
-			<div className="fixed bottom-0 w-[100%] p-[13px] bg-[#0a080d]">
-				{/* <ProgressBar progress={getProgress(schedule[indexDay].exercises)} /> */}
-			</div>
+			{/* <div className="fixed bottom-0 w-[100%] p-[13px] bg-[#0a080d]"> */}
+			{/* <ProgressBar progress={getProgress(schedule[indexDay].exercises)} /> */}
+			{/* </div> */}
 		</div>
 	);
 };
