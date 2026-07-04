@@ -2,22 +2,29 @@ import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 import { settings } from '../../configs/config';
 import type { DayP, ExP, PhaseP, WeekP } from '../../models/Programs';
-import { useGetProgramMeActiveQuery, useUpdateDayCommentsMutation } from '../../store/apiSlice';
+import {
+	useFetchMeQuery,
+	useGetProgramMeActiveQuery,
+	useUpdateDayCommentsMutation,
+} from '../../store/apiSlice';
 import Exercise from '../Exercise/Exercise';
 import Button, { ThemeButton } from '../ui/Button/Button';
 import TextArea from '../ui/TextArea/TextArea';
 import MainBlockHeader from './MainBlockHeader';
 
 interface MainBlockProps {
-    className?: string;
+	className?: string;
 }
 
 export interface ISelectItem {
-    label: string;
-    value: string;
+	label: string;
+	value: string;
 }
 
 const MainBlock: FC<MainBlockProps> = () => {
+	const WORK_DAYS_IN_WEEK = 5;
+	const MS_IN_DAY = 24 * 60 * 60 * 1000;
+
 	// Основные индексы состояния
 	const [indexDay, setIndexDay] = useState<number>(0);
 	const [indexWeek, setIndexWeek] = useState<number>(0);
@@ -25,6 +32,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 	const [dayComment, setDayComment] = useState<string>('');
 
 	const { data: programData, isLoading, error } = useGetProgramMeActiveQuery();
+	const { data: authUser } = useFetchMeQuery();
 
 	const [updateDayComments] = useUpdateDayCommentsMutation();
 
@@ -69,26 +77,103 @@ const MainBlock: FC<MainBlockProps> = () => {
 		setProgramIndex(+id);
 	};
 
-	// Вспомогательная функция для определения текущего дня
-	const getCurrentDay = (day: number): number => {
-		if (day === 0) return 0;
-		if (day <= 2) return 1;
-		if (day > 2) return 2;
-		return 0;
+	const isWorkDay = (date: Date): boolean => {
+		const day = date.getDay();
+		return day >= 1 && day <= WORK_DAYS_IN_WEEK;
 	};
 
-	// Инициализация текущей недели и дня при монтировании
-	useEffect(() => {
-		const diffSeconds = (settings.startProgramm - Date.now()) / 1000;
-		const diffWeeks = Math.abs(Math.ceil(diffSeconds / (60 * 60 * 24 * 7)));
-		const diffDays = Math.abs(Math.ceil((diffSeconds / (60 * 60 * 24)) % 7));
+	const getStartOfDay = (timestamp: number): Date => {
+		const date = new Date(timestamp);
+		date.setHours(0, 0, 0, 0);
+		return date;
+	};
 
-		const currentWeek = diffWeeks >= settings.durationProgramm ? 0 : diffWeeks;
-		const currentDay = diffDays > 6 ? 0 : getCurrentDay(diffDays);
+	const getElapsedWorkDays = (startTimestamp: number): number => {
+		const startDate = getStartOfDay(startTimestamp);
+		const currentDate = getStartOfDay(Date.now());
+
+		if (currentDate <= startDate) {
+			return 0;
+		}
+
+		let elapsedWorkDays = 0;
+		const iteratorDate = new Date(startDate);
+
+		while (iteratorDate < currentDate) {
+			iteratorDate.setTime(iteratorDate.getTime() + MS_IN_DAY);
+			if (isWorkDay(iteratorDate)) {
+				elapsedWorkDays += 1;
+			}
+		}
+
+		return elapsedWorkDays;
+	};
+
+	const getProgramDayFromWorkDay = (workDayIndex: number, daysInProgramWeek: number): number => {
+		if (daysInProgramWeek <= 1) {
+			return 0;
+		}
+
+		const safeWorkDayIndex = Math.min(Math.max(workDayIndex, 0), WORK_DAYS_IN_WEEK - 1);
+		return Math.min(
+			daysInProgramWeek - 1,
+			Math.ceil(((safeWorkDayIndex + 1) * daysInProgramWeek) / WORK_DAYS_IN_WEEK) - 1,
+		);
+	};
+
+	const getUserProgramStartDates = (email?: string): number[] | undefined => {
+		if (!email) {
+			return undefined;
+		}
+
+		const normalizedEmail = email.trim().toLowerCase();
+		const directMatch =
+			settings.programms[email] ??
+			settings.programms[email.trim()] ??
+			settings.programms[normalizedEmail];
+
+		if (directMatch) {
+			return directMatch;
+		}
+
+		const matchedKey = Object.keys(settings.programms).find(
+			(key) => key.trim().toLowerCase() === normalizedEmail,
+		);
+
+		return matchedKey ? settings.programms[matchedKey] : undefined;
+	};
+
+	// Инициализация текущей недели и дня при загрузке активной программы
+	useEffect(() => {
+		if (!activePhase) {
+			return;
+		}
+
+		const userProgramStartDates = getUserProgramStartDates(authUser?.email);
+		if (!userProgramStartDates?.length) {
+			return;
+		}
+
+		const startTimestamp = userProgramStartDates[programIndex] ?? userProgramStartDates[0];
+
+		const elapsedWorkDays = getElapsedWorkDays(startTimestamp);
+		const totalWeeks = Math.max(activePhase.durationWeeks || activePhase.weeks.length, 1);
+		const maxWeekIndex = totalWeeks - 1;
+		const today = getStartOfDay(Date.now());
+		const startDay = getStartOfDay(startTimestamp);
+		const isWeekend = !isWorkDay(today);
+		const shouldJumpToNextWeek = today > startDay && isWeekend;
+
+		const baseWeek = Math.floor(elapsedWorkDays / WORK_DAYS_IN_WEEK);
+		const weekByCalendarState = shouldJumpToNextWeek ? baseWeek + 1 : baseWeek;
+		const currentWeek = Math.min(weekByCalendarState, maxWeekIndex);
+		const daysInCurrentWeek = Math.max(activePhase.weeks?.[currentWeek]?.days?.length || 1, 1);
+		const workDayIndex = shouldJumpToNextWeek ? 0 : elapsedWorkDays % WORK_DAYS_IN_WEEK;
+		const currentDay = getProgramDayFromWorkDay(workDayIndex, daysInCurrentWeek);
 
 		setIndexWeek(currentWeek);
 		setIndexDay(currentDay);
-	}, []); // React Compiler оптимизирует зависимости автоматически
+	}, [activePhase, authUser?.email, programIndex]);
 
 	// ID активной программы
 	const programId = programData?._id || '';
@@ -139,7 +224,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 	if (error) {
 		return (
 			<div className="flex items-center justify-center h-full text-red-500">
-                Error loading program data
+				Error loading program data
 			</div>
 		);
 	}
@@ -171,7 +256,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 					className="!bg-[#00B4B9] !h-[35px] mt-[10px] text-[14px]"
 					onClick={saveDayComment}
 				>
-                    Сохранить комментарий
+					Сохранить комментарий
 				</Button>
 			</div>
 			{/* <div className="fixed bottom-0 w-[100%] p-[13px] bg-[#0a080d]"> */}
