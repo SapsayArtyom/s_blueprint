@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { settings } from '../../configs/config';
 import type { DayP, ExP, PhaseP, WeekP } from '../../models/Programs';
 import {
@@ -30,6 +30,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 	const [indexWeek, setIndexWeek] = useState<number>(0);
 	const [programIndex, setProgramIndex] = useState<number>(0);
 	const [dayComment, setDayComment] = useState<string>('');
+	const hasInitializedCurrentPosition = useRef(false);
 
 	const { data: programData, isLoading, error } = useGetProgramMeActiveQuery();
 	const { data: authUser } = useFetchMeQuery();
@@ -145,7 +146,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 
 	// Инициализация текущей недели и дня при загрузке активной программы
 	useEffect(() => {
-		if (!activePhase) {
+		if (hasInitializedCurrentPosition.current || !activePhase) {
 			return;
 		}
 
@@ -173,6 +174,7 @@ const MainBlock: FC<MainBlockProps> = () => {
 
 		setIndexWeek(currentWeek);
 		setIndexDay(currentDay);
+		hasInitializedCurrentPosition.current = true;
 	}, [activePhase, authUser?.email, programIndex]);
 
 	// ID активной программы
@@ -181,7 +183,6 @@ const MainBlock: FC<MainBlockProps> = () => {
 	// Рендер списка упражнений
 	const renderExercises = (exercises: ExP[]) => {
 		const sortedExercises = [...exercises].sort((a, b) => a.order - b.order);
-		console.log('Sorted Exercises:', sortedExercises); // Debugging line to check the sorted exercises
 		return sortedExercises.map((exercise, index) => (
 			<Exercise data={exercise} programId={programId} key={`exercise-${index}`} />
 		));
